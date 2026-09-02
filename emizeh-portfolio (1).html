@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emizeh — Augusto | Desenvolvedor Full-Stack</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        dark: '#0a0a0a',
+                        darker: '#050505',
+                        surface: '#111111',
+                        surfaceHover: '#1a1a1a',
+                        muted: '#888888',
+                        accent: '#e0e0e0',
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 1s ease-out forwards',
+                        'slide-up': 'slideUp 0.8s ease-out forwards',
+                        'pulse-slow': 'pulseSlow 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        pulseSlow: {
+                            '0%, 100%': { opacity: '1' },
+                            '50%': { opacity: '0.5' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: #0a0a0a;
+            color: #e0e0e0;
+            overflow-x: hidden;
+            cursor: default;
+        }
+        
+        ::selection {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.025;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-40px);
+            transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal-left.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .reveal-scale {
+            opacity: 0;
+            transform: scale(0.95);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal-scale.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .hover-lift {
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s ease, border-color 0.5s ease;
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+        }
+
+        .nav-link {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: linear-gradient(90deg, #e0e0e0, transparent);
+            transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .nav-link:hover {
+            text-shadow: 0 0 20px rgba(255,255,255,0.3);
+        }
+
+        .skill-card {
+            background: linear-gradient(145deg, #111111, #0d0d0d);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skill-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.02), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .skill-card:hover::before {
+            left: 100%;
+        }
+
+        .skill-card:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+            background: linear-gradient(145deg, #151515, #111111);
+            transform: translateY(-6px);
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.5);
+        }
+
+        .skill-card:hover .skill-icon {
+            transform: scale(1.1) rotate(5deg);
+            background: rgba(255,255,255,0.08);
+        }
+
+        .skill-icon {
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .project-card {
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .project-card:hover {
+            transform: scale(1.02);
+        }
+
+        .project-card .project-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 40%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .project-card:hover .project-overlay {
+            opacity: 1;
+        }
+
+        .project-card .project-info {
+            transform: translateY(30px);
+            opacity: 0;
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s;
+        }
+
+        .project-card:hover .project-info {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .project-card .project-bg {
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), filter 0.6s ease;
+        }
+
+        .project-card:hover .project-bg {
+            transform: scale(1.1);
+            filter: blur(2px);
+        }
+
+        .status-dot {
+            animation: pulse-dot 2.5s ease-in-out infinite;
+            box-shadow: 0 0 10px rgba(52, 211, 153, 0.5);
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 10px rgba(52, 211, 153, 0.5); }
+            50% { opacity: 0.5; transform: scale(0.85); box-shadow: 0 0 20px rgba(52, 211, 153, 0.2); }
+        }
+
+        .cursor-glow {
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255,255,255,0.025) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-50%, -50%);
+            transition: left 0.15s ease-out, top 0.15s ease-out;
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #e0e0e0 0%, #888888 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .text-shimmer {
+            background: linear-gradient(90deg, #888 0%, #fff 50%, #888 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 3s linear infinite;
+        }
+
+        @keyframes shimmer {
+            to { background-position: 200% center; }
+        }
+
+        .marquee {
+            display: flex;
+            overflow: hidden;
+            user-select: none;
+            mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+            -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+        }
+
+        .marquee-content {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            animation: marquee 35s linear infinite;
+        }
+
+        @keyframes marquee {
+            from { transform: translateX(0); }
+            to { transform: translateX(-100%); }
+        }
+
+        .social-link {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .social-link::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            background: rgba(255,255,255,0.06);
+            transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 0;
+        }
+
+        .social-link:hover::before {
+            height: 100%;
+        }
+
+        .social-link:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .arrow-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+        }
+
+        .arrow-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: currentColor;
+            transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .arrow-link:hover {
+            gap: 1rem;
+        }
+
+        .arrow-link:hover::after {
+            width: 100%;
+        }
+
+        .magnetic {
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glitch-hover {
+            position: relative;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        .tilt-card {
+            transform-style: preserve-3d;
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .typing-cursor::after {
+            content: '|';
+            animation: blink 1s step-end infinite;
+            color: rgba(255,255,255,0.5);
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        .stagger-1 { transition-delay: 0.1s; }
+        .stagger-2 { transition-delay: 0.2s; }
+        .stagger-3 { transition-delay: 0.3s; }
+        .stagger-4 { transition-delay: 0.4s; }
+        .stagger-5 { transition-delay: 0.5s; }
+
+        .line-reveal {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .line-reveal::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: translateX(-100%);
+            transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .line-reveal.active::after {
+            transform: translateX(100%);
+        }
+
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .rotate-slow {
+            animation: rotateSlow 20s linear infinite;
+        }
+
+        @keyframes rotateSlow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .gradient-border {
+            position: relative;
+        }
+
+        .gradient-border::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: inherit;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent, rgba(255,255,255,0.05));
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .gradient-border:hover::before {
+            opacity: 1;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideUpFade {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-10px); }
+        }
+
+        .hero-glow {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulse-glow 8s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.8; }
+        }
+
+        .tag-pulse:hover {
+            animation: tagPulse 0.6s ease;
+        }
+
+        @keyframes tagPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .counter {
+            font-variant-numeric: tabular-nums;
+        }
+
+        .velocity-tilt {
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
+
+        .scramble-text span {
+            display: inline-block;
+            min-width: 0.5em;
+        }
+
+        .scroll-indicator {
+            animation: scrollBounce 2s ease-in-out infinite;
+        }
+
+        @keyframes scrollBounce {
+            0%, 100% { transform: translateY(0); opacity: 0.5; }
+            50% { transform: translateY(8px); opacity: 1; }
+        }
+
+        .image-reveal {
+            clip-path: inset(0 100% 0 0);
+            transition: clip-path 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .image-reveal.active {
+            clip-path: inset(0 0 0 0);
+        }
+
+        .border-draw {
+            position: relative;
+        }
+
+        .border-draw::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: inherit;
+            clip-path: inset(0 100% 100% 0);
+            transition: clip-path 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .border-draw:hover::after {
+            clip-path: inset(0 0 0 0);
+        }
+    </style>
+</head>
+<body class="font-sans antialiased">
+    <div class="noise-overlay"></div>
+    <div class="cursor-glow" id="cursorGlow"></div>
+
+    <!-- Navigation -->
+    <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-500" id="navbar">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <a href="#home" class="font-display text-xl font-bold tracking-tight text-white group">
+                    <span class="relative">
+                        Emizeh<span class="text-muted group-hover:text-white transition-colors duration-300">.</span>
+                        <span class="absolute -bottom-1 left-0 w-0 h-px bg-white group-hover:w-full transition-all duration-500 ease-out"></span>
+                    </span>
+                </a>
+                
+                <nav class="hidden md:flex items-center gap-8">
+                    <a href="#home" class="nav-link text-sm text-muted hover:text-white transition-all duration-300">Home</a>
+                    <a href="#skills" class="nav-link text-sm text-muted hover:text-white transition-all duration-300">Habilidades</a>
+                    <a href="#projects" class="nav-link text-sm text-muted hover:text-white transition-all duration-300">Projetos</a>
+                    <a href="#about" class="nav-link text-sm text-muted hover:text-white transition-all duration-300">Sobre</a>
+                    <a href="#contact" class="nav-link text-sm text-muted hover:text-white transition-all duration-300">Contato</a>
+                </nav>
+
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2 px-4 py-2 rounded-full bg-surface/80 border border-white/5 backdrop-blur-sm hover:border-white/10 transition-all duration-300 cursor-default">
+                        <span class="status-dot w-2 h-2 rounded-full bg-emerald-400"></span>
+                        <span class="text-xs text-muted font-medium">Disponível para projetos</span>
+                    </div>
+                    <button class="md:hidden text-white p-2 hover:bg-white/5 rounded-lg transition-colors" onclick="toggleMobileMenu()" aria-label="Menu">
+                        <i data-lucide="menu" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-darker/95 backdrop-blur-xl border-t border-white/5">
+            <div class="px-6 py-6 space-y-1">
+                <a href="#home" class="block text-sm text-muted hover:text-white py-3 px-4 rounded-lg hover:bg-white/5 transition-all">Home</a>
+                <a href="#skills" class="block text-sm text-muted hover:text-white py-3 px-4 rounded-lg hover:bg-white/5 transition-all">Habilidades</a>
+                <a href="#projects" class="block text-sm text-muted hover:text-white py-3 px-4 rounded-lg hover:bg-white/5 transition-all">Projetos</a>
+                <a href="#about" class="block text-sm text-muted hover:text-white py-3 px-4 rounded-lg hover:bg-white/5 transition-all">Sobre</a>
+                <a href="#contact" class="block text-sm text-muted hover:text-white py-3 px-4 rounded-lg hover:bg-white/5 transition-all">Contato</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <div class="hero-glow"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-darker/50 pointer-events-none"></div>
+        
+        <div class="relative z-10 max-w-5xl mx-auto px-6 lg:px-8 text-center">
+            <div class="reveal active">
+                <p class="text-muted text-sm tracking-[0.3em] uppercase mb-8 font-medium">
+                    <span class="inline-flex items-center gap-3">
+                        <span class="w-8 h-px bg-white/20"></span>
+                        Desenvolvedor Full-Stack & Game Dev
+                        <span class="w-8 h-px bg-white/20"></span>
+                    </span>
+                </p>
+            </div>
+            
+            <h1 class="reveal font-display text-5xl md:text-7xl lg:text-8xl font-bold leading-[1.1] mb-8 tracking-tight">
+                Hey, sou <span class="text-white glitch-hover inline-block">Augusto</span>.
+            </h1>
+            
+            <h2 class="reveal font-display text-3xl md:text-5xl lg:text-6xl font-bold leading-[1.2] mb-10 text-gradient scramble-text">
+                Mas pode me chamar de <span class="text-white">Emizeh</span>.
+            </h2>
+            
+            <p class="reveal max-w-2xl mx-auto text-muted text-lg md:text-xl leading-relaxed mb-14 typing-cursor">
+                Desenvolvo sites, aplicativos web, apps Android nativos e sistemas em Pawn, 
+                além de explorar e estudar a criação de jogos.
+            </p>
+            
+            <div class="reveal flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="#projects" class="magnetic arrow-link group px-8 py-4 bg-white text-darker font-semibold rounded-full hover:bg-accent hover:shadow-[0_0_40px_rgba(255,255,255,0.15)] transition-all duration-500">
+                    Ver Projetos
+                    <i data-lucide="arrow-down-right" class="w-4 h-4 transition-all duration-300 group-hover:translate-x-1 group-hover:translate-y-1"></i>
+                </a>
+                <a href="#contact" class="magnetic arrow-link group px-8 py-4 border border-white/20 text-white font-semibold rounded-full hover:bg-white/5 hover:border-white/40 hover:shadow-[0_0_30px_rgba(255,255,255,0.05)] transition-all duration-500">
+                    Entre em contato
+                    <i data-lucide="arrow-right" class="w-4 h-4 transition-all duration-300 group-hover:translate-x-2"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 scroll-indicator">
+            <div class="flex flex-col items-center gap-2">
+                <span class="text-xs text-muted/60 tracking-widest uppercase">Scroll</span>
+                <i data-lucide="chevron-down" class="w-5 h-5 text-muted/60"></i>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="py-24 md:py-32 relative">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="reveal mb-20">
+                <p class="text-muted text-sm tracking-[0.3em] uppercase mb-4 font-medium">O que eu faço</p>
+                <h2 class="font-display text-4xl md:text-5xl lg:text-6xl font-bold line-reveal">Especialidades</h2>
+                <p class="text-muted mt-6 max-w-xl leading-relaxed">
+                    Minha stack é diversificada — do frontend ao backend, do mobile aos servidores de jogos.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Web Development -->
+                <div class="reveal stagger-1 skill-card rounded-2xl p-8 hover-lift group tilt-card">
+                    <div class="flex items-start justify-between mb-6">
+                        <div class="skill-icon w-14 h-14 rounded-xl bg-white/5 flex items-center justify-center">
+                            <i data-lucide="globe" class="w-7 h-7 text-white"></i>
+                        </div>
+                        <span class="text-xs text-muted font-mono tracking-wider">01</span>
+                    </div>
+                    <h3 class="font-display text-2xl font-bold mb-4 text-white group-hover:text-shimmer transition-all">Desenvolvimento Web</h3>
+                    <p class="text-muted leading-relaxed mb-6">
+                        Criação de sites modernos, responsivos e web applications com foco em performance, 
+                        experiência do usuário e código limpo.
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="tag-pulse px-3 py-1.5 text-xs rounded-full bg-white/5 text-muted border border-white/5 hover:border-white/20 hover:bg-white/10 transition-all cursor-default">React</span>
+                        <span class="tag-pulse px-3 py-1.5 text-xs rounded-full bg-white/5 text-muted border border-white/5 hover:border-white/20 hover:bg-white/10 transition-all cursor-default">Next.js</span>
+                        <span class="tag-pulse px-3 py-1.5 text-xs rounded-full bg-white/5 text-muted border border-white/5 hover:border-white/20 hover:bg-white/10 transition-all cursor-default">Tailwind</span>
+                        <span class="tag-pulse px-3 py-1.5 text-xs rounded-full bg-white/5 text-muted border border-white/5 hover:border-white/20 hover:bg-white/10 transition-all cursor-default">Node.js</span>
+                        <span class="tag-pulse px-3 py-1.5 text-xs rounded-full bg-white/5 text-muted border border-white/5 hover:border-white/20 hover:bg-white/10 transition-all cursor-default">TypeScript</span>
+                    </div>
+                </div>
+
+                <!-- Android Development -->
+                <div class="reveal stagger-2 skill-card rounded-2xl p-8 hover-lift group tilt-card">
+                    <div class="flex items-start justify-between mb-6">
+                        <div class="skill-icon w-14 h-14 rounded-xl bg-white/5 flex items-center justify-center">
+                            <i data-lucide="smartphone" class="w-7 h-7 text-white"></i>
+                        </div>
+                        <span class="text-xs text-muted font-mono tracking-wider">02</span>
+                    </div>
+                    <h3 class="font-display text-2xl font-bold mb-4 text-white group-hover:text-shimmer transition-all">Desenvolvimento Android</h3>
+                    <p class="text-muted leading-relaxed mb-6">
+                        Desenvolvimento de aplicativos nativos Android com experiências fluidas, 
+                        interfaces modernas e integração com APIs e serviços.
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="tag-pulse px-3 py-1.5 text-xs rounded-full bg-white/5 text-muted border border-white/5 hover:border-white/20 hover:bg-white/10 transition-all cursor-default">Kotlin</span>
+                        <span class="tag-pulse px-3 py-1.5 text-xs rounded-full bg-white/5 text-muted border border-white/5 hover:border-white/20 hover:bg-white/10 transition-all cursor-default">Java</span>
+                        <span class="tag-pulse px-3 py-1.5 text-xs rounded-full bg-white/5 text-muted border border-white/5 hover:border-white/20 hover:bg-white/10 transition-all cursor-default">Jetpack Compose</span>
+                        <span class="tag-pulse px-3 py-1.5 text-xs rounded-full bg-white/5 text-muted border border-white/5 hover:border-white/20 hover:bg-white/10 transition-all cursor-default">Firebase</span>
+                    </div>
+                </div>
+
+                <!-- Pawn Development -->
+                <div class="reveal stagger-3 skill-card rounded-2xl p-8 hover-lift group tilt-card">
+                    <div class="flex items-start justify-between mb-6">
+                        <div class="skill-icon w-14 h-14 rounded-xl bg-white/5 flex items-center justify-center">
+                            <i data-lucide="code-2" class="w-7 h-7 text-white"></i>
+                        </div>
+                        <span class="text-xs text-muted font-mono tracking-wider">03</span>
+                    </div>
+                    <h3 class="font-display text-2xl font-bold mb-4 text-white group-hover:text-shimmer transition-all">Linguagem Pawn</h3>
+                    <p class="text-muted leading-relaxed mb-6">
+                        Desenvolvimento de sistemas, gamemodes e scripts para servidores de jogos, 
+                        com foco em otimização e funcionalidades customizadas.
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="tag-pulse px-3 py-1.5 text-xs rounded-full bg-white/5 text-muted border border-white/5 hover:border-white/20 hover:bg-white/10 transition-all cursor-default">SA-MP</span>
+                        <span class="tag-pulse px-3 py-1.5 text-xs rounded-full bg-white/5 text-muted border border-white/5 hover:border-white/20 hover:bg-white/10 transition-all cursor-default">open.mp</span>
+                        <span class="tag-pulse px-3 py-1.5 text-xs rounded-full bg-white/5 text-muted border border-white/5 hover:border-white/20 hover:bg-white/10 transition-all cursor-default">Game Servers</span>
+                        <span class="tag-pulse px-3 py-1.5 text-xs rounded-full bg-white/5 text-muted border border-white/5 hover:border-white/20 hover:bg-white/10 transition-all cursor-default">MySQL</span>
+                    </div>
+                </div>
+
+                <!-- Game Development -->
+                <div class="reveal stagger-4 skill-card rounded-2xl p-8 hover-lift group tilt-card">
+                    <div class="flex items-start justify-between mb-6">
+                        <div class="skill-icon w-14 h-14 rounded-xl bg-white/5 flex items-center justify-center">
+                            <i data-lucide="gamepad-2" class="w-7 h-7 text-white"></i>
+                        </div>
+                        <span class="text-xs text-muted font-mono tracking-wider">04</span>
+                    </div>
+                    <h3 class="font-display text-2xl font-bold mb-4 text-white group-hover:text-shimmer transition-all">Game Development</h3>
+                    <p class="text-muted leading-relaxed mb-6">
+                        Em constante aprendizado e desenvolvimento de projetos de jogos, 
+                        explorando mecânicas, design e programação de games.
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="tag-pulse px-3 py-1.5 text-xs rounded-full bg-white/5 text-muted border border-white/5 hover:border-white/20 hover:bg-white/10 transition-all cursor-default">Unity</span>
+                        <span class="tag-pulse px-3 py-1.5 text-xs rounded-full bg-white/5 text-muted border border-white/5 hover:border-white/20 hover:bg-white/10 transition-all cursor-default">C#</span>
+                        <span class="tag-pulse px-3 py-1.5 text-xs rounded-full bg-white/5 text-muted border border-white/5 hover:border-white/20 hover:bg-white/10 transition-all cursor-default">Game Design</span>
+                        <span class="tag-pulse px-3 py-1.5 text-xs rounded-full bg-white/5 text-muted border border-white/5 hover:border-white/20 hover:bg-white/10 transition-all cursor-default">Estudando</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Marquee Section -->
+    <section class="py-16 border-y border-white/5 overflow-hidden relative">
+        <div class="absolute inset-0 bg-gradient-to-r from-darker via-transparent to-darker z-10 pointer-events-none"></div>
+        <div class="marquee">
+            <div class="marquee-content">
+                <span class="text-5xl md:text-7xl font-display font-bold text-white/[0.03] whitespace-nowrap hover:text-white/[0.08] transition-colors duration-500 cursor-default">Web Development</span>
+                <span class="text-white/20 text-2xl">◆</span>
+                <span class="text-5xl md:text-7xl font-display font-bold text-white/[0.03] whitespace-nowrap hover:text-white/[0.08] transition-colors duration-500 cursor-default">Android Apps</span>
+                <span class="text-white/20 text-2xl">◆</span>
+                <span class="text-5xl md:text-7xl font-display font-bold text-white/[0.03] whitespace-nowrap hover:text-white/[0.08] transition-colors duration-500 cursor-default">Pawn Scripting</span>
+                <span class="text-white/20 text-2xl">◆</span>
+                <span class="text-5xl md:text-7xl font-display font-bold text-white/[0.03] whitespace-nowrap hover:text-white/[0.08] transition-colors duration-500 cursor-default">Game Dev</span>
+                <span class="text-white/20 text-2xl">◆</span>
+                <span class="text-5xl md:text-7xl font-display font-bold text-white/[0.03] whitespace-nowrap hover:text-white/[0.08] transition-colors duration-500 cursor-default">Full-Stack</span>
+                <span class="text-white/20 text-2xl">◆</span>
+                <span class="text-5xl md:text-7xl font-display font-bold text-white/[0.03] whitespace-nowrap hover:text-white/[0.08] transition-colors duration-500 cursor-default">UI/UX</span>
+                <span class="text-white/20 text-2xl">◆</span>
+            </div>
+            <div class="marquee-content">
+                <span class="text-5xl md:text-7xl font-display font-bold text-white/[0.03] whitespace-nowrap hover:text-white/[0.08] transition-colors duration-500 cursor-default">Web Development</span>
+                <span class="text-white/20 text-2xl">◆</span>
+                <span class="text-5xl md:text-7xl font-display font-bold text-white/[0.03] whitespace-nowrap hover:text-white/[0.08] transition-colors duration-500 cursor-default">Android Apps</span>
+                <span class="text-white/20 text-2xl">◆</span>
+                <span class="text-5xl md:text-7xl font-display font-bold text-white/[0.03] whitespace-nowrap hover:text-white/[0.08] transition-colors duration-500 cursor-default">Pawn Scripting</span>
+                <span class="text-white/20 text-2xl">◆</span>
+                <span class="text-5xl md:text-7xl font-display font-bold text-white/[0.03] whitespace-nowrap hover:text-white/[0.08] transition-colors duration-500 cursor-default">Game Dev</span>
+                <span class="text-white/20 text-2xl">◆</span>
+                <span class="text-5xl md:text-7xl font-display font-bold text-white/[0.03] whitespace-nowrap hover:text-white/[0.08] transition-colors duration-500 cursor-default">Full-Stack</span>
+                <span class="text-white/20 text-2xl">◆</span>
+                <span class="text-5xl md:text-7xl font-display font-bold text-white/[0.03] whitespace-nowrap hover:text-white/[0.08] transition-colors duration-500 cursor-default">UI/UX</span>
+                <span class="text-white/20 text-2xl">◆</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="py-24 md:py-32">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="reveal flex flex-col md:flex-row md:items-end justify-between mb-20">
+                <div>
+                    <p class="text-muted text-sm tracking-[0.3em] uppercase mb-4 font-medium">Portfólio</p>
+                    <h2 class="font-display text-4xl md:text-5xl lg:text-6xl font-bold line-reveal">Projetos</h2>
+                    <p class="text-muted mt-4 max-w-md">Alguns dos meus trabalhos recentes. Clique para explorar.</p>
+                </div>
+                <a href="#" class="arrow-link text-muted hover:text-white mt-6 md:mt-0 text-sm group">
+                    Ver todos os projetos
+                    <i data-lucide="arrow-up-right" class="w-4 h-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"></i>
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Project 1 -->
+                <div class="reveal stagger-1 project-card rounded-2xl bg-surface aspect-[4/3] group overflow-hidden border border-white/5 hover:border-white/10">
+                    <div class="project-bg absolute inset-0 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-transparent rounded-2xl"></div>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="w-24 h-24 rounded-2xl bg-white/5 flex items-center justify-center rotate-slow group-hover:rotate-0 transition-all duration-700">
+                            <i data-lucide="layout-dashboard" class="w-12 h-12 text-white/20"></i>
+                        </div>
+                    </div>
+                    <div class="project-overlay rounded-2xl"></div>
+                    <div class="project-info absolute bottom-0 left-0 right-0 p-8 z-10">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="px-3 py-1 text-xs rounded-full bg-white/10 text-white/80 border border-white/10 backdrop-blur-sm">Web</span>
+                            <span class="px-3 py-1 text-xs rounded-full bg-white/10 text-white/80 border border-white/10 backdrop-blur-sm">React</span>
+                            <span class="px-3 py-1 text-xs rounded-full bg-white/10 text-white/80 border border-white/10 backdrop-blur-sm">TypeScript</span>
+                        </div>
+                        <h3 class="font-display text-2xl font-bold text-white mb-2">Dashboard Analytics</h3>
+                        <p class="text-sm text-white/60 mb-4">Painel de analytics com visualização de dados em tempo real e relatórios automatizados</p>
+                        <div class="flex items-center gap-2 text-white/40 text-sm">
+                            <span>Ver projeto</span>
+                            <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="reveal stagger-2 project-card rounded-2xl bg-surface aspect-[4/3] group overflow-hidden border border-white/5 hover:border-white/10">
+                    <div class="project-bg absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-teal-500/10 to-transparent rounded-2xl"></div>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="w-24 h-24 rounded-2xl bg-white/5 flex items-center justify-center rotate-slow group-hover:rotate-0 transition-all duration-700">
+                            <i data-lucide="smartphone" class="w-12 h-12 text-white/20"></i>
+                        </div>
+                    </div>
+                    <div class="project-overlay rounded-2xl"></div>
+                    <div class="project-info absolute bottom-0 left-0 right-0 p-8 z-10">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="px-3 py-1 text-xs rounded-full bg-white/10 text-white/80 border border-white/10 backdrop-blur-sm">Android</span>
+                            <span class="px-3 py-1 text-xs rounded-full bg-white/10 text-white/80 border border-white/10 backdrop-blur-sm">Kotlin</span>
+                        </div>
+                        <h3 class="font-display text-2xl font-bold text-white mb-2">App de Produtividade</h3>
+                        <p class="text-sm text-white/60 mb-4">Aplicativo nativo Android para gestão de tarefas, hábitos e produtividade pessoal</p>
+                        <div class="flex items-center gap-2 text-white/40 text-sm">
+                            <span>Ver projeto</span>
+                            <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 3 -->
+                <div class="reveal stagger-3 project-card rounded-2xl bg-surface aspect-[4/3] group overflow-hidden border border-white/5 hover:border-white/10">
+                    <div class="project-bg absolute inset-0 bg-gradient-to-br from-orange-500/10 via-red-500/10 to-transparent rounded-2xl"></div>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="w-24 h-24 rounded-2xl bg-white/5 flex items-center justify-center rotate-slow group-hover:rotate-0 transition-all duration-700">
+                            <i data-lucide="server" class="w-12 h-12 text-white/20"></i>
+                        </div>
+                    </div>
+                    <div class="project-overlay rounded-2xl"></div>
+                    <div class="project-info absolute bottom-0 left-0 right-0 p-8 z-10">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="px-3 py-1 text-xs rounded-full bg-white/10 text-white/80 border border-white/10 backdrop-blur-sm">Pawn</span>
+                            <span class="px-3 py-1 text-xs rounded-full bg-white/10 text-white/80 border border-white/10 backdrop-blur-sm">MySQL</span>
+                        </div>
+                        <h3 class="font-display text-2xl font-bold text-white mb-2">Gamemode RP</h3>
+                        <p class="text-sm text-white/60 mb-4">Sistema completo de roleplay com economia, facções e sistema de casas para servidor SA-MP/open.mp</p>
+                        <div class="flex items-center gap-2 text-white/40 text-sm">
+                            <span>Ver projeto</span>
+                            <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 4 -->
+                <div class="reveal stagger-4 project-card rounded-2xl bg-surface aspect-[4/3] group overflow-hidden border border-white/5 hover:border-white/10">
+                    <div class="project-bg absolute inset-0 bg-gradient-to-br from-purple-500/10 via-pink-500/10 to-transparent rounded-2xl"></div>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="w-24 h-24 rounded-2xl bg-white/5 flex items-center justify-center rotate-slow group-hover:rotate-0 transition-all duration-700">
+                            <i data-lucide="gamepad-2" class="w-12 h-12 text-white/20"></i>
+                        </div>
+                    </div>
+                    <div class="project-overlay rounded-2xl"></div>
+                    <div class="project-info absolute bottom-0 left-0 right-0 p-8 z-10">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="px-3 py-1 text-xs rounded-full bg-white/10 text-white/80 border border-white/10 backdrop-blur-sm">Unity</span>
+                            <span class="px-3 py-1 text-xs rounded-full bg-white/10 text-white/80 border border-white/10 backdrop-blur-sm">C#</span>
+                        </div>
+                        <h3 class="font-display text-2xl font-bold text-white mb-2">Jogo 2D Platformer</h3>
+                        <p class="text-sm text-white/60 mb-4">Projeto de jogo de plataforma em desenvolvimento com mecânicas de movimento e combate</p>
+                        <div class="flex items-center gap-2 text-white/40 text-sm">
+                            <span>Ver projeto</span>
+                            <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-24 md:py-32 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+                <div class="reveal">
+                    <p class="text-muted text-sm tracking-[0.3em] uppercase mb-4 font-medium">Sobre mim</p>
+                    <h2 class="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-8 line-reveal">Trajetória & Paixão</h2>
+                    <div class="space-y-5 text-muted leading-relaxed text-lg">
+                        <p class="reveal-left stagger-1">
+                            Sou o Augusto, também conhecido como <strong class="text-white">Emizeh</strong>. Minha jornada na programação 
+                            começou pela curiosidade de entender como as coisas funcionam por trás das telas.
+                        </p>
+                        <p class="reveal-left stagger-2">
+                            Ao longo dos anos, me especializei em desenvolvimento <strong class="text-white">Full-Stack</strong>, 
+                            criando desde sites institucionais até aplicações web complexas. Paralelamente, 
+                            desenvolvi apps <strong class="text-white">Android nativos</strong> e mergulhei no mundo 
+                            dos <strong class="text-white">servidores de jogos</strong> com Pawn.
+                        </p>
+                        <p class="reveal-left stagger-3">
+                            Hoje, estou expandindo meus horizontes para o <strong class="text-white">Game Development</strong>, 
+                            unindo minha paixão por jogos com minhas habilidades técnicas para criar experiências 
+                            interativas memoráveis.
+                        </p>
+                    </div>
+                    
+                    <div class="mt-10 flex flex-wrap gap-3">
+                        <div class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-surface border border-white/5 hover:border-white/15 hover:bg-white/[0.03] transition-all duration-300 cursor-default group">
+                            <i data-lucide="coffee" class="w-4 h-4 text-muted group-hover:text-white transition-colors"></i>
+                            <span class="text-sm text-muted group-hover:text-white transition-colors">Café lover</span>
+                        </div>
+                        <div class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-surface border border-white/5 hover:border-white/15 hover:bg-white/[0.03] transition-all duration-300 cursor-default group">
+                            <i data-lucide="gamepad-2" class="w-4 h-4 text-muted group-hover:text-white transition-colors"></i>
+                            <span class="text-sm text-muted group-hover:text-white transition-colors">Gamer</span>
+                        </div>
+                        <div class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-surface border border-white/5 hover:border-white/15 hover:bg-white/[0.03] transition-all duration-300 cursor-default group">
+                            <i data-lucide="code" class="w-4 h-4 text-muted group-hover:text-white transition-colors"></i>
+                            <span class="text-sm text-muted group-hover:text-white transition-colors">Code addicted</span>
+                        </div>
+                        <div class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-surface border border-white/5 hover:border-white/15 hover:bg-white/[0.03] transition-all duration-300 cursor-default group">
+                            <i data-lucide="rocket" class="w-4 h-4 text-muted group-hover:text-white transition-colors"></i>
+                            <span class="text-sm text-muted group-hover:text-white transition-colors">Always learning</span>
+                        </div>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="mt-12 grid grid-cols-3 gap-6">
+                        <div class="text-center">
+                            <div class="font-display text-3xl font-bold text-white counter" data-target="5">0</div>
+                            <div class="text-xs text-muted mt-1">Anos de experiência</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="font-display text-3xl font-bold text-white counter" data-target="20">0</div>
+                            <div class="text-xs text-muted mt-1">Projetos entregues</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="font-display text-3xl font-bold text-white counter" data-target="4">0</div>
+                            <div class="text-xs text-muted mt-1">Áreas de atuação</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reveal relative">
+                    <div class="aspect-square rounded-2xl bg-gradient-to-br from-surface to-darker border border-white/5 p-10 flex items-center justify-center float-animation gradient-border">
+                        <div class="text-center relative z-10">
+                            <div class="w-40 h-40 mx-auto mb-8 rounded-full bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/10 relative overflow-hidden group">
+                                <div class="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                <span class="font-display text-7xl font-bold text-white relative z-10 group-hover:scale-110 transition-transform duration-500">E</span>
+                            </div>
+                            <p class="font-display text-3xl font-bold text-white mb-2">Emizeh</p>
+                            <p class="text-muted text-sm tracking-wider uppercase">Augusto</p>
+                            <div class="mt-6 flex items-center justify-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-emerald-400 status-dot"></span>
+                                <span class="text-xs text-muted">Desenvolvedor ativo</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Decorative elements -->
+                    <div class="absolute -top-6 -right-6 w-32 h-32 rounded-full bg-white/[0.02] blur-3xl animate-pulse"></div>
+                    <div class="absolute -bottom-6 -left-6 w-40 h-40 rounded-full bg-white/[0.02] blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
+                    
+                    <!-- Floating badges -->
+                    <div class="absolute top-4 -left-4 px-3 py-1.5 rounded-lg bg-surface border border-white/10 text-xs text-muted backdrop-blur-sm float-animation" style="animation-delay: 0.5s;">
+                        Full-Stack
+                    </div>
+                    <div class="absolute bottom-8 -right-4 px-3 py-1.5 rounded-lg bg-surface border border-white/10 text-xs text-muted backdrop-blur-sm float-animation" style="animation-delay: 1s;">
+                        Game Dev
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-24 md:py-32 border-t border-white/5 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-white/[0.01] to-transparent pointer-events-none"></div>
+        
+        <div class="max-w-4xl mx-auto px-6 lg:px-8 text-center relative z-10">
+            <div class="reveal">
+                <p class="text-muted text-sm tracking-[0.3em] uppercase mb-4 font-medium">Contato</p>
+                <h2 class="font-display text-4xl md:text-6xl lg:text-7xl font-bold mb-8 line-reveal">Vamos construir algo juntos?</h2>
+                <p class="text-muted text-lg mb-16 max-w-xl mx-auto leading-relaxed">
+                    Estou disponível para projetos freelance, colaborações e oportunidades. 
+                    Vamos conversar sobre sua ideia!
+                </p>
+            </div>
+
+            <div class="reveal flex flex-col sm:flex-row items-center justify-center gap-4 mb-20">
+                <button onclick="copyEmail()" class="magnetic arrow-link group px-8 py-4 bg-white text-darker font-semibold rounded-full hover:bg-accent hover:shadow-[0_0_40px_rgba(255,255,255,0.15)] transition-all duration-500 border-none cursor-pointer">
+                    <i data-lucide="copy" class="w-4 h-4"></i>
+                    Copiar e-mail
+                </button>
+                <a href="mailto:tcharlesaugusto882@gmail.com" class="magnetic arrow-link group px-8 py-4 bg-white text-darker font-semibold rounded-full hover:bg-accent hover:shadow-[0_0_40px_rgba(255,255,255,0.15)] transition-all duration-500">
+                    Enviar e-mail
+                    <i data-lucide="mail" class="w-4 h-4"></i>
+                </a>
+                <a href="#" class="magnetic arrow-link group px-8 py-4 border border-white/20 text-white font-semibold rounded-full hover:bg-white/5 hover:border-white/40 transition-all duration-500">
+                    Ver currículo
+                    <i data-lucide="file-text" class="w-4 h-4"></i>
+                </a>
+            </div>
+
+            <div class="reveal grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
+                <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="social-link flex items-center justify-center gap-3 p-5 rounded-xl bg-surface border border-white/5 text-muted hover:text-white transition-all duration-400 group">
+                    <i data-lucide="github" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                    <span class="text-sm">GitHub</span>
+                </a>
+                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="social-link flex items-center justify-center gap-3 p-5 rounded-xl bg-surface border border-white/5 text-muted hover:text-white transition-all duration-400 group">
+                    <i data-lucide="linkedin" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                    <span class="text-sm">LinkedIn</span>
+                </a>
+                <a href="https://discord.gg/3SgW5YfKBD" target="_blank" rel="noopener noreferrer" class="social-link flex items-center justify-center gap-3 p-5 rounded-xl bg-surface border border-white/5 text-muted hover:text-white transition-all duration-400 group relative overflow-hidden">
+                    <div class="absolute inset-0 bg-[#5865F2]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-400"></div>
+                    <i data-lucide="message-circle" class="w-5 h-5 group-hover:scale-110 transition-transform relative z-10"></i>
+                    <span class="text-sm relative z-10">Discord</span>
+                </a>
+                <a href="https://t.me" target="_blank" rel="noopener noreferrer" class="social-link flex items-center justify-center gap-3 p-5 rounded-xl bg-surface border border-white/5 text-muted hover:text-white transition-all duration-400 group">
+                    <i data-lucide="send" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                    <span class="text-sm">Telegram</span>
+                </a>
+            </div>
+
+            <div class="mt-16 pt-16 border-t border-white/5">
+                <p class="text-muted text-sm">
+                    Ou me adicione diretamente no Discord: <span class="text-white font-mono">emizeh</span>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-10 border-t border-white/5 relative">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="flex items-center gap-3">
+                    <span class="font-display text-xl font-bold text-white">Emizeh<span class="text-muted">.</span></span>
+                    <span class="text-muted text-sm">© 2026</span>
+                </div>
+                
+                <div class="flex items-center gap-6">
+                    <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition-colors duration-300">
+                        <i data-lucide="github" class="w-5 h-5"></i>
+                    </a>
+                    <a href="https://discord.gg/3SgW5YfKBD" target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition-colors duration-300">
+                        <i data-lucide="message-circle" class="w-5 h-5"></i>
+                    </a>
+                    <a href="mailto:tcharlesaugusto882@gmail.com" class="text-muted hover:text-white transition-colors duration-300">
+                        <i data-lucide="mail" class="w-5 h-5"></i>
+                    </a>
+                </div>
+
+                <p class="text-muted text-sm flex items-center gap-2">
+                    Desenhado e desenvolvido com
+                    <i data-lucide="heart" class="w-4 h-4 text-red-400/60"></i>
+                    por <span class="text-white">Augusto</span>
+                </p>
+            </div>
+            
+            <div class="mt-8 pt-8 border-t border-white/5 text-center">
+                <p class="text-xs text-muted/40 font-mono">
+                    Built with HTML, Tailwind CSS & Vanilla JS — No frameworks, just skills.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-8 right-8 z-50 transform translate-y-20 opacity-0 transition-all duration-500 pointer-events-none">
+        <div class="flex items-center gap-3 px-6 py-4 rounded-xl bg-surface border border-white/10 shadow-2xl backdrop-blur-xl">
+            <i data-lucide="check-circle" class="w-5 h-5 text-emerald-400"></i>
+            <span class="text-sm text-white" id="toastMessage">Copiado!</span>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // ===== MOBILE MENU =====
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            const icon = document.querySelector('button[onclick="toggleMobileMenu()"] i');
+            
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                menu.style.animation = 'slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+                icon.setAttribute('data-lucide', 'x');
+            } else {
+                menu.style.animation = 'slideUpFade 0.3s ease forwards';
+                setTimeout(() => {
+                    menu.classList.add('hidden');
+                    icon.setAttribute('data-lucide', 'menu');
+                }, 300);
+            }
+            lucide.createIcons();
+        }
+
+        // ===== SCROLL REVEAL =====
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px 0px -80px 0px',
+            threshold: 0.05
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.classList.add('active');
+                        // Trigger child animations if any
+                        const children = entry.target.querySelectorAll('.reveal-child');
+                        children.forEach((child, i) => {
+                            setTimeout(() => {
+                                child.classList.add('active');
+                            }, i * 100);
+                        });
+                    }, index * 80);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => {
+            observer.observe(el);
+        });
+
+        // ===== NAVBAR SCROLL EFFECT =====
+        let lastScroll = 0;
+        let ticking = false;
+        const navbar = document.getElementById('navbar');
+
+        function updateNavbar() {
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll > 50) {
+                navbar.style.backgroundColor = 'rgba(10, 10, 10, 0.85)';
+                navbar.style.backdropFilter = 'blur(20px) saturate(180%)';
+                navbar.style.borderBottom = '1px solid rgba(255, 255, 255, 0.06)';
+                navbar.style.boxShadow = '0 4px 30px rgba(0, 0, 0, 0.3)';
+            } else {
+                navbar.style.backgroundColor = 'transparent';
+                navbar.style.backdropFilter = 'none';
+                navbar.style.borderBottom = '1px solid transparent';
+                navbar.style.boxShadow = 'none';
+            }
+            
+            lastScroll = currentScroll;
+            ticking = false;
+        }
+
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                requestAnimationFrame(updateNavbar);
+                ticking = true;
+            }
+        });
+
+        // ===== CURSOR GLOW =====
+        const cursorGlow = document.getElementById('cursorGlow');
+        let mouseX = 0, mouseY = 0;
+        let glowX = 0, glowY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        function animateGlow() {
+            glowX += (mouseX - glowX) * 0.08;
+            glowY += (mouseY - glowY) * 0.08;
+            
+            cursorGlow.style.left = glowX + 'px';
+            cursorGlow.style.top = glowY + 'px';
+            
+            requestAnimationFrame(animateGlow);
+        }
+
+        if (window.matchMedia('(pointer: fine)').matches) {
+            animateGlow();
+        } else {
+            cursorGlow.style.display = 'none';
+        }
+
+        // ===== MAGNETIC BUTTONS =====
+        document.querySelectorAll('.magnetic').forEach(btn => {
+            btn.addEventListener('mousemove', (e) => {
+                const rect = btn.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                
+                btn.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
+            });
+            
+            btn.addEventListener('mouseleave', () => {
+                btn.style.transform = 'translate(0, 0)';
+            });
+        });
+
+        // ===== SMOOTH SCROLL =====
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const offset = 80;
+                    const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - offset;
+                    
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                    
+                    document.getElementById('mobileMenu').classList.add('hidden');
+                }
+            });
+        });
+
+        // ===== PARALLAX HERO =====
+        let heroParallaxTicking = false;
+        
+        window.addEventListener('scroll', () => {
+            if (!heroParallaxTicking) {
+                requestAnimationFrame(() => {
+                    const scrolled = window.pageYOffset;
+                    const hero = document.querySelector('#home');
+                    const heroContent = document.querySelector('#home .relative.z-10');
+                    
+                    if (hero && scrolled < window.innerHeight) {
+                        heroContent.style.transform = `translateY(${scrolled * 0.15}px)`;
+                        heroContent.style.opacity = 1 - (scrolled / (window.innerHeight * 0.8));
+                    }
+                    heroParallaxTicking = false;
+                });
+                heroParallaxTicking = true;
+            }
+        });
+
+        // ===== TEXT SCRAMBLE EFFECT =====
+        class TextScramble {
+            constructor(el) {
+                this.el = el;
+                this.chars = '!<>-_\\/[]{}—=+*^?#________';
+                this.update = this.update.bind(this);
+            }
+            
+            setText(newText) {
+                const oldText = this.el.innerText;
+                const length = Math.max(oldText.length, newText.length);
+                const promise = new Promise((resolve) => this.resolve = resolve);
+                this.queue = [];
+                
+                for (let i = 0; i < length; i++) {
+                    const from = oldText[i] || '';
+                    const to = newText[i] || '';
+                    const start = Math.floor(Math.random() * 40);
+                    const end = start + Math.floor(Math.random() * 40);
+                    this.queue.push({ from, to, start, end });
+                }
+                
+                cancelAnimationFrame(this.frameRequest);
+                this.frame = 0;
+                this.update();
+                return promise;
+            }
+            
+            update() {
+                let output = '';
+                let complete = 0;
+                
+                for (let i = 0, n = this.queue.length; i < n; i++) {
+                    let { from, to, start, end, char } = this.queue[i];
+                    
+                    if (this.frame >= end) {
+                        complete++;
+                        output += to;
+                    } else if (this.frame >= start) {
+                        if (!char || Math.random() < 0.28) {
+                            char = this.randomChar();
+                            this.queue[i].char = char;
+                        }
+                        output += `<span class="text-white/40">${char}</span>`;
+                    } else {
+                        output += from;
+                    }
+                }
+                
+                this.el.innerHTML = output;
+                
+                if (complete === this.queue.length) {
+                    this.resolve();
+                } else {
+                    this.frameRequest = requestAnimationFrame(this.update);
+                    this.frame++;
+                }
+            }
+            
+            randomChar() {
+                return this.chars[Math.floor(Math.random() * this.chars.length)];
+            }
+        }
+
+        // Apply scramble to subtitle on load
+        window.addEventListener('load', () => {
+            const subtitle = document.querySelector('.scramble-text');
+            if (subtitle) {
+                const fx = new TextScramble(subtitle);
+                const originalText = subtitle.innerText;
+                subtitle.innerText = '';
+                setTimeout(() => {
+                    fx.setText(originalText);
+                }, 800);
+            }
+        });
+
+        // ===== TOAST NOTIFICATION =====
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toastMessage.textContent = message;
+            toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+                toast.classList.remove('translate-y-0', 'opacity-100');
+            }, 2500);
+        }
+
+        // ===== COPY EMAIL =====
+        function copyEmail() {
+            navigator.clipboard.writeText('tcharlesaugusto882@gmail.com').then(() => {
+                showToast('E-mail copiado para a área de transferência!');
+            }).catch(() => {
+                showToast('Erro ao copiar e-mail');
+            });
+        }
+
+        // ===== PROJECT CARD INTERACTIONS =====
+        document.querySelectorAll('.project-card').forEach(card => {
+            card.addEventListener('click', () => {
+                showToast('Projeto em desenvolvimento');
+            });
+        });
+
+        // ===== GLITCH EFFECT ON HOVER =====
+        document.querySelectorAll('.glitch-hover').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                el.style.animation = 'glitch 0.3s ease';
+                setTimeout(() => {
+                    el.style.animation = '';
+                }, 300);
+            });
+        });
+
+        // ===== TILT EFFECT FOR CARDS =====
+        document.querySelectorAll('.tilt-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = (y - centerY) / 20;
+                const rotateY = (centerX - x) / 20;
+                
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+            });
+        });
+
+        // ===== TYPING EFFECT FOR HERO =====
+        function typeWriter(element, text, speed = 50) {
+            let i = 0;
+            element.textContent = '';
+            
+            function type() {
+                if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                }
+            }
+            
+            type();
+        }
+
+        // ===== PARTICLE BACKGROUND =====
+        const canvas = document.createElement('canvas');
+        canvas.id = 'particleCanvas';
+        canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;opacity:0.4;';
+        document.body.insertBefore(canvas, document.body.firstChild);
+
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const particleCount = 25;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+            
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.3;
+                this.speedY = (Math.random() - 0.5) * 0.3;
+                this.opacity = Math.random() * 0.5 + 0.1;
+            }
+            
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+            
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+            
+            // Draw connections
+            particles.forEach((p1, i) => {
+                particles.slice(i + 1).forEach(p2 => {
+                    const dx = p1.x - p2.x;
+                    const dy = p1.y - p2.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 150) {
+                        ctx.beginPath();
+                        ctx.moveTo(p1.x, p1.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${0.05 * (1 - distance / 150)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                });
+            });
+            
+            requestAnimationFrame(animateParticles);
+        }
+
+        resizeCanvas();
+        initParticles();
+        animateParticles();
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            initParticles();
+        });
+
+        // Disable particles on mobile
+        if (window.matchMedia('(pointer: coarse)').matches) {
+            canvas.style.display = 'none';
+        }
+
+        // ===== SCROLL VELOCITY TILT =====
+        let scrollTimeout;
+        let lastScrollY = window.scrollY;
+
+        window.addEventListener('scroll', () => {
+            const velocity = window.scrollY - lastScrollY;
+            const tilt = Math.min(Math.max(velocity * 0.05, -5), 5);
+            
+            document.querySelectorAll('.velocity-tilt').forEach(el => {
+                el.style.transform = `rotateX(${tilt}deg)`;
+                el.style.transition = 'transform 0.1s ease-out';
+            });
+            
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                document.querySelectorAll('.velocity-tilt').forEach(el => {
+                    el.style.transform = 'rotateX(0deg)';
+                    el.style.transition = 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+                });
+            }, 150);
+            
+            lastScrollY = window.scrollY;
+        });
+
+        // ===== COUNTER ANIMATION =====
+        function animateCounter(el, target, duration = 2000) {
+            let start = 0;
+            const increment = target / (duration / 16);
+            
+            function update() {
+                start += increment;
+                if (start < target) {
+                    el.textContent = Math.floor(start);
+                    requestAnimationFrame(update);
+                } else {
+                    el.textContent = target;
+                }
+            }
+            
+            update();
+        }
+
+        // Trigger counters when visible
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const target = parseInt(entry.target.dataset.target);
+                    animateCounter(entry.target, target);
+                    counterObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('.counter').forEach(counter => {
+            counterObserver.observe(counter);
+        });
+
+        // ===== PREFERS REDUCED MOTION =====
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            document.querySelectorAll('.reveal').forEach(el => {
+                el.classList.add('active');
+                el.style.transition = 'none';
+            });
+            canvas.style.display = 'none';
+        }
+
+        // ===== KEYBOARD NAVIGATION =====
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.getElementById('mobileMenu').classList.add('hidden');
+            }
+        });
+
+        // ===== CONSOLE EASTER EGG =====
+        console.log('%c Emizeh ', 'background: #111; color: #fff; font-size: 24px; font-weight: bold; padding: 10px 20px; border-radius: 8px;');
+        console.log('%c Hey! Curioso(a) que você é 😎', 'color: #888; font-size: 14px;');
+        console.log('%c Me chama no Discord: https://discord.gg/3SgW5YfKBD', 'color: #5865F2; font-size: 12px;');
+    </script>
+</body>
+</html>
